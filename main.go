@@ -71,6 +71,9 @@ func main () {
 	//root route
 	mux.HandleFunc("/",root)
 
+	//create product route
+	mux.HandleFunc("/create",addProduct)
+
 	//listen on 8080 port if catch any error then store in err
 	err := http.ListenAndServe(":8080",mux)
 
