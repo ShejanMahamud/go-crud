@@ -6,11 +6,50 @@ import (
 	"net/http"
 )
 
+//product slice
+var productList []Product
+
+//product create handler
+func addProduct (w http.ResponseWriter, r *http.Request) {
+	//check if method is POST or not
+	if  r.Method != http.MethodPost {
+		http.Error(w,"Bad Request Type",400)
+		return
+	}
+	//add cors
+	w.Header().Set("Access-Control--Allow-Origin","*")
+	//send as json format
+	w.Header().Set("Content-Type", "application/json")
+
+	//create new product instance
+	var newProduct Product
+
+	//create a decoder
+	decoder := json.NewDecoder(r.Body)
+	//json => struct
+	err := decoder.Decode(&newProduct)
+	//if catch any err then throw it
+	if err != nil {
+		http.Error(w,"Invalid JSON Format",400)
+	}
+	//update id 
+	newProduct.Id = len(productList) + 1
+	//append the new product
+	productList = append(productList,newProduct)
+	// create a encoder
+	encoder := json.NewEncoder(w)
+	//encode the struct => json
+	encoder.Encode(&RootResponse{
+		Success: true,
+		Message: "Product added successfully",
+	})
+}
+
 //root handler
 func root (w http.ResponseWriter, r *http.Request) {
-	//check if method is not GET then throw an error
+	//check if method is GET or not
 	if  r.Method != http.MethodGet {
-		http.Error(w,"Bad Request type",400)
+		http.Error(w,"Bad Request Type",400)
 	}
 	//add cors
 	w.Header().Set("Access-Control--Allow-Origin","*")
